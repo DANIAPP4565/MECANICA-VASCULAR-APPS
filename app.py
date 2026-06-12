@@ -77,7 +77,7 @@ APPS = [
             "Análisis de VOP carótido-femoral, rigidez arterial, edad vascular, "
             "riesgo vascular e informe clínico."
         ),
-        "url": "https://TU-APP-VOP.streamlit.app",
+        "url": "https://rigidez-vascular-vop.streamlit.app/",
         "categoria": "Rigidez arterial",
         "estado": "Activa",
         "icono": "🧬",
