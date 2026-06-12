@@ -44,7 +44,7 @@ APPS = [
             "Aplicación para análisis de monitoreo ambulatorio de presión arterial, "
             "fenotipo hipertensivo, carga presora, patrón circadiano e informe PDF."
         ),
-        "url": "https://TU-APP-MAPA.streamlit.app",
+        "url": "https://informe-mapa.streamlit.app/",
         "categoria": "Hipertensión arterial",
         "estado": "Activa",
         "icono": "📈",
