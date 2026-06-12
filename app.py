@@ -1,494 +1,528 @@
 import streamlit as st
 from datetime import datetime
-from urllib.parse import urlparse
+
 
 # ============================================================
-# APP MADRE - PORTAL CLINICO IA DR. OLANO
-# ============================================================
-# Autor/Desarrollador: Dr. Ricardo Daniel Olano
-# Especialidad: Cardiologia e Hipertension Arterial
-# Objetivo: Portal madre para ingresar a diferentes apps web
-# desarrolladas en Streamlit.
+# CONFIGURACIÓN GENERAL DE LA PÁGINA
 # ============================================================
 
 st.set_page_config(
-    page_title="Portal Clinico IA - Dr. Olano",
+    page_title="Portal Clínico IA - Dr. Olano",
     page_icon="🫀",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ============================================================
-# CSS GENERAL
-# ============================================================
-
-CUSTOM_CSS = """
-<style>
-:root {
-    --primary: #0f172a;
-    --secondary: #1e3a8a;
-    --accent: #0369a1;
-    --bg-soft: #f8fafc;
-    --border: #e2e8f0;
-    --text-soft: #475569;
-}
-
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
-
-.main-title {
-    font-size: 2.35rem;
-    font-weight: 900;
-    color: var(--primary);
-    letter-spacing: -0.03em;
-    margin-bottom: 0.25rem;
-}
-
-.subtitle {
-    font-size: 1.05rem;
-    color: var(--text-soft);
-    margin-bottom: 1.4rem;
-}
-
-.section-title {
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: var(--primary);
-    margin-top: 0.5rem;
-    margin-bottom: 0.8rem;
-}
-
-.hero-box {
-    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 26px;
-    margin-bottom: 22px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.06);
-}
-
-.metric-box {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 18px;
-    text-align: center;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-}
-
-.metric-value {
-    font-size: 2rem;
-    font-weight: 900;
-    color: var(--secondary);
-}
-
-.metric-label {
-    font-size: 0.92rem;
-    color: #64748b;
-}
-
-.app-card {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 22px;
-    min-height: 285px;
-    margin-bottom: 18px;
-    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.055);
-}
-
-.app-title {
-    font-size: 1.18rem;
-    font-weight: 850;
-    color: var(--primary);
-    margin-bottom: 0.35rem;
-}
-
-.app-description {
-    color: var(--text-soft);
-    font-size: 0.94rem;
-    line-height: 1.45;
-    min-height: 88px;
-    margin-top: 12px;
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 0.76rem;
-    font-weight: 800;
-    margin-right: 5px;
-    margin-top: 5px;
-}
-
-.badge-category {
-    background: #e0f2fe;
-    color: #075985;
-}
-
-.badge-active {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.badge-dev {
-    background: #fef9c3;
-    color: #854d0e;
-}
-
-.badge-paused {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.footer {
-    color: #64748b;
-    font-size: 0.86rem;
-    margin-top: 28px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-}
-
-.login-box {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    padding: 24px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-}
-
-.small-note {
-    font-size: 0.85rem;
-    color: #64748b;
-}
-</style>
-"""
-
-st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 # ============================================================
-# DATOS POR DEFECTO DE APPS HIJAS
-# Se pueden editar desde .streamlit/secrets.toml
+# CONFIGURACIÓN DE USUARIOS
 # ============================================================
 
-DEFAULT_APPS = [
+USUARIOS = {
+    "admin": {
+        "password": "1234",
+        "nombre": "Dr. Ricardo Daniel Olano",
+        "rol": "Administrador",
+    },
+    "usuario": {
+        "password": "1234",
+        "nombre": "Usuario invitado",
+        "rol": "Usuario",
+    },
+}
+
+
+# ============================================================
+# CONFIGURACIÓN DE APPS HIJAS
+# Reemplazar las URL por las URL reales de tus apps Streamlit
+# ============================================================
+
+APPS = [
     {
-        "id": "mapa",
         "nombre": "MAPA 24 horas",
-        "descripcion": "Analisis de monitoreo ambulatorio de presion arterial, depuracion estadistica, fenotipo hipertensivo, patron circadiano e informe PDF.",
+        "descripcion": (
+            "Aplicación para análisis de monitoreo ambulatorio de presión arterial, "
+            "fenotipo hipertensivo, carga presora, patrón circadiano e informe PDF."
+        ),
         "url": "https://TU-APP-MAPA.streamlit.app",
-        "categoria": "Hipertension arterial",
+        "categoria": "Hipertensión arterial",
         "estado": "Activa",
         "icono": "📈",
     },
     {
-        "id": "cgi",
-        "nombre": "Cardiografia de Impedancia",
-        "descripcion": "Evaluacion hemodinamica no invasiva, patron circulatorio, ortostatismo, embarazo, volemia, contractilidad y acoplamiento ventriculo-arterial.",
+        "nombre": "Cardiografía de Impedancia",
+        "descripcion": (
+            "Evaluación hemodinámica no invasiva, índice cardíaco, resistencias vasculares, "
+            "volemia, contractilidad, ortostatismo y embarazo."
+        ),
         "url": "https://TU-APP-CGI.streamlit.app",
-        "categoria": "Mecanica vascular",
+        "categoria": "Mecánica vascular",
         "estado": "Activa",
         "icono": "🫀",
     },
     {
-        "id": "presion_central",
-        "nombre": "Presion Central Olano",
-        "descripcion": "Digitalizacion de curva de presion aortica central, calibracion, separacion de ondas, energia relativa, analisis espectral y edad vascular.",
+        "nombre": "Presión Central Olano",
+        "descripcion": (
+            "Digitalización y análisis de presión aórtica central, separación de ondas, "
+            "índice de aumento, presión reflejada y análisis armónico."
+        ),
         "url": "https://TU-APP-PRESION-CENTRAL.streamlit.app",
-        "categoria": "Presion central",
-        "estado": "En desarrollo",
-        "icono": "〰️",
+        "categoria": "Presión central",
+        "estado": "Activa",
+        "icono": "📊",
     },
     {
-        "id": "vop",
         "nombre": "Velocidad de Onda de Pulso",
-        "descripcion": "Analisis de rigidez arterial, VOP carotideofemoral, percentiles, edad vascular e integracion clinica.",
+        "descripcion": (
+            "Análisis de VOP carótido-femoral, rigidez arterial, edad vascular, "
+            "riesgo vascular e informe clínico."
+        ),
         "url": "https://TU-APP-VOP.streamlit.app",
         "categoria": "Rigidez arterial",
-        "estado": "Activa",
-        "icono": "⚡",
-    },
-    {
-        "id": "ia_mv",
-        "nombre": "Proceso IA MV",
-        "descripcion": "Informe integrado de mecanica vascular con PAC, VOP y cardiografia de impedancia, graficos comparativos, fenotipo y sugerencia clinica.",
-        "url": "https://TU-APP-IA-MV.streamlit.app",
-        "categoria": "Integracion clinica",
-        "estado": "En desarrollo",
-        "icono": "🧠",
-    },
-    {
-        "id": "riesgo_cv",
-        "nombre": "Riesgo Cardiovascular",
-        "descripcion": "Evaluacion preventiva con escalas de riesgo, dislipemia, objetivos terapeuticos y semaforizacion clinica.",
-        "url": "https://TU-APP-RIESGO-CV.streamlit.app",
-        "categoria": "Prevencion cardiovascular",
-        "estado": "Activa",
-        "icono": "🛡️",
-    },
-    {
-        "id": "obesidad",
-        "nombre": "Manejo Clinico de Obesidad",
-        "descripcion": "Guia clinica para evaluacion de obesidad, IMC, indice cintura/talla, riesgo cardiometabolico y recomendaciones terapeuticas.",
-        "url": "https://TU-APP-OBESIDAD.streamlit.app",
-        "categoria": "Cardiometabolismo",
-        "estado": "Activa",
-        "icono": "⚖️",
-    },
-    {
-        "id": "fa",
-        "nombre": "Fibrilacion Auricular",
-        "descripcion": "Manejo clinico y terapeutico de fibrilacion auricular, estratificacion de riesgo, anticoagulacion y control de frecuencia/ritmo.",
-        "url": "https://TU-APP-FA.streamlit.app",
-        "categoria": "Arritmias",
-        "estado": "Activa",
-        "icono": "💓",
-    },
-    {
-        "id": "amiloidosis",
-        "nombre": "Amiloidosis Cardiaca",
-        "descripcion": "App de apoyo para sospecha, diagnostico, fenotipado y manejo clinico-terapeutico de amiloidosis cardiaca.",
-        "url": "https://TU-APP-AMILOIDOSIS.streamlit.app",
-        "categoria": "Cardiologia clinica",
         "estado": "Activa",
         "icono": "🧬",
     },
     {
-        "id": "miocardiopatia_hipertrofica",
-        "nombre": "Miocardiopatia Hipertrofica",
-        "descripcion": "Evaluacion clinica y terapeutica de miocardiopatia hipertrofica, riesgo, seguimiento, estudios complementarios y conducta.",
-        "url": "https://TU-APP-MCH.streamlit.app",
-        "categoria": "Cardiologia clinica",
+        "nombre": "Riesgo Cardiovascular",
+        "descripcion": (
+            "Evaluación de riesgo cardiovascular, prevención primaria/secundaria, "
+            "dislipemia, objetivos terapéuticos y recomendaciones."
+        ),
+        "url": "https://TU-APP-RIESGO-CV.streamlit.app",
+        "categoria": "Prevención cardiovascular",
         "estado": "Activa",
-        "icono": "🫀",
+        "icono": "🛡️",
+    },
+    {
+        "nombre": "App Embarazo y Preeclampsia",
+        "descripcion": (
+            "Evaluación hemodinámica materna, índice cardíaco, resistencias vasculares, "
+            "riesgo de preeclampsia y patrón circulatorio según edad gestacional."
+        ),
+        "url": "https://TU-APP-EMBARAZO.streamlit.app",
+        "categoria": "Embarazo",
+        "estado": "Beta",
+        "icono": "🤰",
+    },
+    {
+        "nombre": "Obesidad y Riesgo Metabólico",
+        "descripcion": (
+            "Guía clínica para evaluación de obesidad, IMC, índice cintura/talla, "
+            "riesgo cardiometabólico y orientación terapéutica."
+        ),
+        "url": "https://TU-APP-OBESIDAD.streamlit.app",
+        "categoria": "Riesgo metabólico",
+        "estado": "En desarrollo",
+        "icono": "⚖️",
+    },
+    {
+        "nombre": "Fibrilación Auricular",
+        "descripcion": (
+            "Manejo clínico de fibrilación auricular, estratificación de riesgo, "
+            "anticoagulación, control de ritmo y control de frecuencia."
+        ),
+        "url": "https://TU-APP-FA.streamlit.app",
+        "categoria": "Cardiología clínica",
+        "estado": "En desarrollo",
+        "icono": "💓",
+    },
+    {
+        "nombre": "Amiloidosis Cardíaca",
+        "descripcion": (
+            "App de apoyo para sospecha, diagnóstico, estratificación y tratamiento "
+            "de la amiloidosis cardíaca."
+        ),
+        "url": "https://TU-APP-AMILOIDOSIS.streamlit.app",
+        "categoria": "Cardiología clínica",
+        "estado": "En desarrollo",
+        "icono": "🧪",
+    },
+    {
+        "nombre": "Miocardiopatía Hipertrófica",
+        "descripcion": (
+            "Guía de evaluación clínica, riesgo arrítmico, indicación de estudios, "
+            "tratamiento y seguimiento de miocardiopatía hipertrófica."
+        ),
+        "url": "https://TU-APP-MCH.streamlit.app",
+        "categoria": "Cardiología clínica",
+        "estado": "En desarrollo",
+        "icono": "🫁",
+    },
+    {
+        "nombre": "Repositorio IA Mecánica Vascular",
+        "descripcion": (
+            "Repositorio general de herramientas, informes, algoritmos y módulos "
+            "de inteligencia artificial aplicados a hipertensión y mecánica vascular."
+        ),
+        "url": "https://TU-APP-REPOSITORIO-IA.streamlit.app",
+        "categoria": "Repositorio IA",
+        "estado": "Beta",
+        "icono": "🧠",
     },
 ]
 
+
 # ============================================================
-# FUNCIONES DE ESTADO Y SEGURIDAD
+# ESTILOS CSS
 # ============================================================
 
-def init_state():
-    if "logged_in" not in st.session_state:
-        st.session_state.logged_in = False
+st.markdown(
+    """
+    <style>
+    .main-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #0f172a;
+        margin-bottom: 0.1rem;
+    }
+
+    .subtitle {
+        font-size: 1.05rem;
+        color: #475569;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-top: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .app-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: 0px 4px 16px rgba(15, 23, 42, 0.07);
+        min-height: 265px;
+        margin-bottom: 18px;
+    }
+
+    .app-card:hover {
+        border: 1px solid #0f766e;
+        box-shadow: 0px 6px 22px rgba(15, 118, 110, 0.12);
+    }
+
+    .app-title {
+        font-size: 1.22rem;
+        font-weight: 850;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    .app-description {
+        color: #475569;
+        font-size: 0.92rem;
+        line-height: 1.45;
+        min-height: 95px;
+        margin-top: 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .badge-category {
+        display: inline-block;
+        background: #e0f2fe;
+        color: #075985;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 800;
+        margin-right: 5px;
+    }
+
+    .badge-active {
+        display: inline-block;
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    .badge-beta {
+        display: inline-block;
+        background: #fef9c3;
+        color: #854d0e;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    .badge-dev {
+        display: inline-block;
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    .metric-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 18px;
+        text-align: center;
+        box-shadow: 0px 3px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+    .metric-label {
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .footer-box {
+        margin-top: 30px;
+        padding: 18px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        color: #475569;
+        font-size: 0.9rem;
+    }
+
+    .login-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 22px;
+        padding: 26px;
+        box-shadow: 0px 4px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .small-text {
+        color: #64748b;
+        font-size: 0.85rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
+# FUNCIONES DE SESIÓN
+# ============================================================
+
+def inicializar_sesion():
+    if "logueado" not in st.session_state:
+        st.session_state.logueado = False
+
     if "usuario" not in st.session_state:
         st.session_state.usuario = None
 
+    if "nombre_usuario" not in st.session_state:
+        st.session_state.nombre_usuario = None
 
-def get_secret(section: str, key: str, default=None):
-    try:
-        return st.secrets.get(section, {}).get(key, default)
-    except Exception:
-        return default
-
-
-def app_url_is_valid(url: str) -> bool:
-    try:
-        parsed = urlparse(url)
-        return parsed.scheme in ["http", "https"] and parsed.netloc != ""
-    except Exception:
-        return False
+    if "rol" not in st.session_state:
+        st.session_state.rol = None
 
 
-def login_screen():
-    st.markdown(
-        """
-        <div class="hero-box">
-            <div class="main-title">Portal Clinico IA - Dr. Olano</div>
-            <div class="subtitle">
-                App madre para acceder a las herramientas web de hipertension arterial, mecanica vascular,
-                cardiografia de impedancia, presion central, VOP y prevencion cardiovascular.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+def cerrar_sesion():
+    st.session_state.logueado = False
+    st.session_state.usuario = None
+    st.session_state.nombre_usuario = None
+    st.session_state.rol = None
+    st.rerun()
 
-    col1, col2, col3 = st.columns([1, 1.15, 1])
-    with col2:
-        st.markdown('<div class="login-box">', unsafe_allow_html=True)
-        st.subheader("Ingreso profesional")
-        usuario = st.text_input("Usuario", placeholder="Ingrese usuario")
-        password = st.text_input("Contrasena", type="password", placeholder="Ingrese contrasena")
 
-        if st.button("Ingresar", use_container_width=True):
-            admin_user = get_secret("auth", "admin_user", "admin")
-            admin_password = get_secret("auth", "admin_password", "1234")
+# ============================================================
+# LOGIN
+# ============================================================
 
-            if usuario == admin_user and password == admin_password:
-                st.session_state.logged_in = True
-                st.session_state.usuario = usuario
-                st.rerun()
-            else:
-                st.error("Usuario o contrasena incorrectos.")
+def pantalla_login():
+    col_izq, col_centro, col_der = st.columns([1, 1.15, 1])
 
+    with col_centro:
+        st.markdown("<br><br>", unsafe_allow_html=True)
         st.markdown(
-            "<div class='small-note'>Usuario inicial de prueba: admin / 1234. Cambiarlo en secrets.toml antes de publicar.</div>",
+            """
+            <div class="login-box">
+                <div class="main-title">🫀 Portal Clínico IA</div>
+                <div class="subtitle">
+                    Ecosistema de apps clínicas inteligentes en hipertensión arterial,
+                    cardiografía de impedancia y mecánica vascular.
+                </div>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
-        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown("### Ingreso profesional")
+
+        usuario = st.text_input("Usuario")
+        password = st.text_input("Contraseña", type="password")
+
+        ingresar = st.button("Ingresar", use_container_width=True)
+
+        if ingresar:
+            if usuario in USUARIOS and password == USUARIOS[usuario]["password"]:
+                st.session_state.logueado = True
+                st.session_state.usuario = usuario
+                st.session_state.nombre_usuario = USUARIOS[usuario]["nombre"]
+                st.session_state.rol = USUARIOS[usuario]["rol"]
+                st.success("Ingreso correcto.")
+                st.rerun()
+            else:
+                st.error("Usuario o contraseña incorrectos.")
+
+        st.info("Usuario inicial: admin | Contraseña inicial: 1234")
+
+        st.markdown(
+            """
+            <div class="small-text">
+            Recomendación: luego de subir la app a Streamlit Cloud, cambiar usuario y contraseña.
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 # ============================================================
-# CARGA DE APPS
+# BADGE DE ESTADO
 # ============================================================
 
-def load_apps():
-    """
-    Carga apps desde .streamlit/secrets.toml.
-    Si no hay configuracion, usa DEFAULT_APPS.
-    """
-    apps_from_secrets = []
+def badge_estado(estado):
+    estado_lower = estado.lower()
 
-    try:
-        apps_section = st.secrets.get("apps", {})
-        for key, data in apps_section.items():
-            apps_from_secrets.append(
-                {
-                    "id": key,
-                    "nombre": data.get("nombre", key),
-                    "descripcion": data.get("descripcion", ""),
-                    "url": data.get("url", "#"),
-                    "categoria": data.get("categoria", "General"),
-                    "estado": data.get("estado", "Activa"),
-                    "icono": data.get("icono", "🧩"),
-                }
-            )
-    except Exception:
-        apps_from_secrets = []
+    if estado_lower == "activa":
+        return f'<span class="badge-active">{estado}</span>'
 
-    return apps_from_secrets if apps_from_secrets else DEFAULT_APPS
+    if estado_lower == "beta":
+        return f'<span class="badge-beta">{estado}</span>'
+
+    return f'<span class="badge-dev">{estado}</span>'
 
 
-def status_badge_class(estado: str) -> str:
-    estado_l = estado.lower().strip()
-    if estado_l in ["activa", "activo", "online", "produccion"]:
-        return "badge badge-active"
-    if estado_l in ["en desarrollo", "beta", "prototipo", "demo"]:
-        return "badge badge-dev"
-    return "badge badge-paused"
+# ============================================================
+# TARJETA DE APP
+# ============================================================
 
-
-def render_app_card(app: dict):
-    url = app.get("url", "#")
-    url_ok = app_url_is_valid(url)
-
+def renderizar_tarjeta_app(app):
     st.markdown(
         f"""
         <div class="app-card">
-            <div class="app-title">{app.get("icono", "🧩")} {app.get("nombre", "App")}</div>
-            <span class="badge badge-category">{app.get("categoria", "General")}</span>
-            <span class="{status_badge_class(app.get("estado", "Activa"))}">{app.get("estado", "Activa")}</span>
-            <div class="app-description">{app.get("descripcion", "")}</div>
+            <div class="app-title">{app["icono"]} {app["nombre"]}</div>
+            <span class="badge-category">{app["categoria"]}</span>
+            {badge_estado(app["estado"])}
+            <div class="app-description">{app["descripcion"]}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    if url_ok:
-        st.link_button("Abrir app", url, use_container_width=True)
-    else:
-        st.button("URL pendiente", use_container_width=True, disabled=True)
+    st.link_button(
+        label="Abrir app",
+        url=app["url"],
+        use_container_width=True,
+    )
 
 
 # ============================================================
-# DASHBOARD PRINCIPAL
+# PANEL PRINCIPAL
 # ============================================================
 
-def dashboard():
-    apps = load_apps()
-
+def pantalla_principal():
+    # Sidebar
     with st.sidebar:
         st.title("🫀 Portal IA")
         st.caption("Dr. Ricardo Daniel Olano")
-        st.caption("Cardiologo Hipertensologo")
         st.divider()
 
-        categorias = sorted(set(app.get("categoria", "General") for app in apps))
-        categoria_sel = st.selectbox("Categoria", ["Todas"] + categorias)
-        estado_sel = st.selectbox("Estado", ["Todos"] + sorted(set(app.get("estado", "Activa") for app in apps)))
-        buscar = st.text_input("Buscar", placeholder="MAPA, VOP, presion central...")
+        st.markdown(f"**Usuario:** {st.session_state.nombre_usuario}")
+        st.markdown(f"**Rol:** {st.session_state.rol}")
 
         st.divider()
-        st.caption(f"Usuario: {st.session_state.usuario}")
-        if st.button("Cerrar sesion", use_container_width=True):
-            st.session_state.logged_in = False
-            st.session_state.usuario = None
-            st.rerun()
 
-    # Filtros
-    filtered_apps = apps
+        categorias = sorted(set(app["categoria"] for app in APPS))
+        estados = sorted(set(app["estado"] for app in APPS))
 
-    if categoria_sel != "Todas":
-        filtered_apps = [app for app in filtered_apps if app.get("categoria") == categoria_sel]
+        categoria_seleccionada = st.selectbox(
+            "Filtrar por categoría",
+            ["Todas"] + categorias,
+        )
 
-    if estado_sel != "Todos":
-        filtered_apps = [app for app in filtered_apps if app.get("estado") == estado_sel]
+        estado_seleccionado = st.selectbox(
+            "Filtrar por estado",
+            ["Todos"] + estados,
+        )
 
-    if buscar:
-        q = buscar.lower().strip()
-        filtered_apps = [
-            app for app in filtered_apps
-            if q in app.get("nombre", "").lower()
-            or q in app.get("descripcion", "").lower()
-            or q in app.get("categoria", "").lower()
-        ]
+        busqueda = st.text_input("Buscar app")
 
-    # Hero
+        st.divider()
+
+        if st.button("Cerrar sesión", use_container_width=True):
+            cerrar_sesion()
+
+    # Encabezado
     st.markdown(
         """
-        <div class="hero-box">
-            <div class="main-title">Portal Clinico IA - Mecanica Vascular</div>
-            <div class="subtitle">
-                Ecosistema de apps inteligentes para evaluacion hemodinamica, hipertension arterial,
-                presion central, rigidez arterial, riesgo cardiovascular y apoyo a la decision clinica.
-            </div>
+        <div class="main-title">Portal Clínico IA - Mecánica Vascular</div>
+        <div class="subtitle">
+            Panel madre para ingresar a las diferentes apps web clínicas, docentes y de investigación.
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    # Métricas
+    total_apps = len(APPS)
+    apps_activas = sum(1 for app in APPS if app["estado"].lower() == "activa")
+    apps_beta = sum(1 for app in APPS if app["estado"].lower() == "beta")
+    apps_desarrollo = total_apps - apps_activas - apps_beta
+
     c1, c2, c3, c4 = st.columns(4)
+
     with c1:
         st.markdown(
             f"""
             <div class="metric-box">
-                <div class="metric-value">{len(apps)}</div>
+                <div class="metric-value">{total_apps}</div>
                 <div class="metric-label">Apps registradas</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
     with c2:
-        activas = sum(1 for app in apps if app.get("estado", "").lower() in ["activa", "activo", "online", "produccion"])
         st.markdown(
             f"""
             <div class="metric-box">
-                <div class="metric-value">{activas}</div>
-                <div class="metric-label">Apps activas</div>
+                <div class="metric-value">{apps_activas}</div>
+                <div class="metric-label">Activas</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
     with c3:
         st.markdown(
             f"""
             <div class="metric-box">
-                <div class="metric-value">{len(categorias)}</div>
-                <div class="metric-label">Categorias</div>
+                <div class="metric-value">{apps_beta}</div>
+                <div class="metric-label">Beta</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
     with c4:
         st.markdown(
             f"""
             <div class="metric-box">
-                <div class="metric-value">{datetime.now().year}</div>
-                <div class="metric-label">Version</div>
+                <div class="metric-value">{apps_desarrollo}</div>
+                <div class="metric-label">En desarrollo</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -496,23 +530,63 @@ def dashboard():
 
     st.divider()
 
-    st.markdown('<div class="section-title">Apps disponibles</div>', unsafe_allow_html=True)
+    # Filtrado
+    apps_filtradas = APPS.copy()
 
-    if not filtered_apps:
+    if categoria_seleccionada != "Todas":
+        apps_filtradas = [
+            app for app in apps_filtradas
+            if app["categoria"] == categoria_seleccionada
+        ]
+
+    if estado_seleccionado != "Todos":
+        apps_filtradas = [
+            app for app in apps_filtradas
+            if app["estado"] == estado_seleccionado
+        ]
+
+    if busqueda:
+        texto = busqueda.lower()
+        apps_filtradas = [
+            app for app in apps_filtradas
+            if texto in app["nombre"].lower()
+            or texto in app["descripcion"].lower()
+            or texto in app["categoria"].lower()
+            or texto in app["estado"].lower()
+        ]
+
+    st.markdown('<div class="section-title">Aplicaciones disponibles</div>', unsafe_allow_html=True)
+
+    if not apps_filtradas:
         st.warning("No se encontraron apps con los filtros seleccionados.")
-        return
+    else:
+        columnas = st.columns(3)
 
-    cols = st.columns(3)
-    for i, app in enumerate(filtered_apps):
-        with cols[i % 3]:
-            render_app_card(app)
+        for i, app in enumerate(apps_filtradas):
+            with columnas[i % 3]:
+                renderizar_tarjeta_app(app)
 
+    # Área administrador
+    if st.session_state.rol == "Administrador":
+        st.divider()
+        st.markdown('<div class="section-title">Panel administrador</div>', unsafe_allow_html=True)
+
+        with st.expander("Ver configuración actual de apps"):
+            st.dataframe(APPS, use_container_width=True)
+
+        st.info(
+            "Para agregar o modificar apps, editar la lista APPS dentro de app.py. "
+            "También se puede migrar luego a una base Excel, Google Sheets o SQLite."
+        )
+
+    # Footer
     st.markdown(
-        """
-        <div class="footer">
-            <b>Desarrollador:</b> Dr. Ricardo Daniel Olano, Cardiologo Hipertensologo.<br>
-            <b>Concepto:</b> Plataforma madre para organizar apps clinicas inteligentes desarrolladas en Streamlit.<br>
-            <b>Uso previsto:</b> docencia, investigacion, presentacion institucional y apoyo estructurado a la decision clinica.
+        f"""
+        <div class="footer-box">
+            <b>Desarrollador:</b> Dr. Ricardo Daniel Olano, Cardiólogo Hipertensólogo.<br>
+            <b>Proyecto:</b> Ecosistema de Apps Clínicas Inteligentes para Hipertensión Arterial,
+            Cardiografía de Impedancia, Presión Central, VOP y Mecánica Vascular.<br>
+            <b>Año:</b> {datetime.now().year}
         </div>
         """,
         unsafe_allow_html=True,
@@ -520,12 +594,17 @@ def dashboard():
 
 
 # ============================================================
-# MAIN
+# EJECUCIÓN PRINCIPAL
 # ============================================================
 
-init_state()
+def main():
+    inicializar_sesion()
 
-if st.session_state.logged_in:
-    dashboard()
-else:
-    login_screen()
+    if not st.session_state.logueado:
+        pantalla_login()
+    else:
+        pantalla_principal()
+
+
+if __name__ == "__main__":
+    main()
