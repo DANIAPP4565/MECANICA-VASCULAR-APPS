@@ -66,7 +66,7 @@ APPS = [
             "Digitalización y análisis de presión aórtica central, separación de ondas, "
             "índice de aumento, presión reflejada y análisis armónico."
         ),
-        "url": "https://TU-APP-PRESION-CENTRAL.streamlit.app",
+        "url": "https://presion-central.streamlit.app/",
         "categoria": "Presión central",
         "estado": "Activa",
         "icono": "📊",
