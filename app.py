@@ -61,7 +61,7 @@ APPS = [
         "icono": "🫀",
     },
     {
-        "nombre": "Presión Central Olano",
+        "nombre": "Presión Central",
         "descripcion": (
             "Digitalización y análisis de presión aórtica central, separación de ondas, "
             "índice de aumento, presión reflejada y análisis armónico."
