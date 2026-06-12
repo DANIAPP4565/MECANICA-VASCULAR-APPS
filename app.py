@@ -88,7 +88,7 @@ APPS = [
             "Evaluación de riesgo cardiovascular, prevención primaria/secundaria, "
             "dislipemia, objetivos terapéuticos y recomendaciones."
         ),
-        "url": "https://TU-APP-RIESGO-CV.streamlit.app",
+        "url": "https://dislipemia2026-pro.streamlit.app/",
         "categoria": "Prevención cardiovascular",
         "estado": "Activa",
         "icono": "🛡️",
