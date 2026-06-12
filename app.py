@@ -55,7 +55,7 @@ APPS = [
             "Evaluación hemodinámica no invasiva, índice cardíaco, resistencias vasculares, "
             "volemia, contractilidad, ortostatismo y embarazo."
         ),
-        "url": "https://TU-APP-CGI.streamlit.app",
+        "url": "https://app-cgi-hemodinamia.streamlit.app/",
         "categoria": "Mecánica vascular",
         "estado": "Activa",
         "icono": "🫀",
